@@ -1,4 +1,5 @@
-# advent-of-code-2017 solutions in Clojure.
+# Advent Of Code 2017
+### Solutions written in Clojure
 
 An attempt to re-catch myself with Clojure, and hopefully stick with it,
 if you find something that you think can be improved you are more than
