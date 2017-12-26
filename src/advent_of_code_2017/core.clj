@@ -14,7 +14,9 @@
             [advent-of-code-2017.day13 :as day13]
             [advent-of-code-2017.day14 :as day14]
             [advent-of-code-2017.day15 :as day15]
-            [advent-of-code-2017.day16 :as day16]))
+            [advent-of-code-2017.day16 :as day16]
+            [advent-of-code-2017.day17 :as day17]))
+
 
 (defn my-format [x]
   (str x (apply str (take (- 32 (count (str x))) (repeat " "))) " |"))
@@ -57,6 +59,8 @@
     (println (str " | 15  |  B   | " (my-format (day15/part-2))))
     (println (str " | 16  |  A   | " (my-format (day16/part-1))))
     (println (str " | 16  |  B   | " (my-format (day16/part-2))))
+    (println (str " | 17  |  A   | " (my-format (day17/part-1))))
+    (println (str " | 17  |  B   | " (my-format (day17/part-2))))
     (println "  ===============================================")))
     
 
