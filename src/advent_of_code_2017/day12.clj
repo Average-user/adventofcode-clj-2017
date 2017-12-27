@@ -11,10 +11,10 @@
 (defn get-input []
   (map get-node (file-lines "resources/day12.txt")))
 
-(defn connected-with [n graph]
-  (loop [gs graph, g graph, cs [n]]
+(defn connected-with [x graph]
+  (loop [gs graph, g graph, cs #{x}]
     (if (empty? gs)
-      cs
+      [cs g]
       (let [[n nb] (first gs)]
         (if (elem cs n)
           (let [ng (filter #(not= (first %) n) g)]
@@ -22,17 +22,16 @@
           (recur (rest gs) g cs))))))
 
 (defn find-connected [graph]
-  (loop [gs graph, ac []]
+  (loop [gs graph, ac #{}]
     (if (empty? gs)
       ac
-      (let [cs  (connected-with (ffirst gs) gs)
-            ngs (filter #(not (elem cs (first %))) gs)]
+      (let [[cs ngs] (connected-with (ffirst gs) gs)]
         (recur ngs (conj ac cs))))))
 
 (defn part-1
   "Day 12 part 1 solution"
   []
-  (->> (get-input) (connected-with 0) distinct count))
+  (->> (get-input) (connected-with 0) first count))
 
 (defn part-2
   "Day 12 part 1 solution"

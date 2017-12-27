@@ -1,10 +1,6 @@
 (ns advent-of-code-2017.day03
   (:require [advent-of-code-2017.common :refer [string->int]]))
 
-(defn printm [x]
-  (let [nx (map #(map (fn [y] (format "%2d" y)) %) x)]
-    (map println nx)))
-
 (defn get-input []
   (string->int (slurp "resources/day03.txt")))
 

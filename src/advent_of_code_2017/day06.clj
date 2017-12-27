@@ -22,7 +22,7 @@
       (if (some #(= nxs %) ac)
         ac
         (recur nxs (cons nxs ac))))))
-      
+
 (defn first-cycle [xs]
   (relocation xs (count xs)))
 

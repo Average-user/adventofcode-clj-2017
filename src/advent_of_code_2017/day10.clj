@@ -8,12 +8,12 @@
   (as-> "resources/day10.txt"
       x (file-lines x) (first x) (str/split x #",") (mapv string->int x)))
 
-(defn findp [ix el-in]
-  (ffirst (drop-while (fn [[e i]] (not= i ix)) el-in)))
+(defn get-input2 []
+  (->> "resources/day10.txt" file-lines first (map byte)))
 
 (defn reverse-section
   [nums i l]
-  (let [r (map #(mod % 256) (range i (+ i l)))
+  (let [r (map #(rem % 256) (range i (+ i l)))
         m (zipmap r (reverse r))]
     (mapv (fn [i' v] (get nums (get m i' i'))) (range) nums)))
 
