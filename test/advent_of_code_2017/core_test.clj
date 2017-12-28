@@ -18,7 +18,10 @@
             [advent-of-code-2017.day16 :as day16]
             [advent-of-code-2017.day17 :as day17]
             [advent-of-code-2017.day18 :as day18]
-            [advent-of-code-2017.day19 :as day19]))
+            [advent-of-code-2017.day19 :as day19]
+            [advent-of-code-2017.day20 :as day20]
+            [advent-of-code-2017.day21 :as day21]
+            [advent-of-code-2017.day22 :as day22]))
 
 (deftest day01-part-1
   (is (= (day01/part-1) 1216)))
@@ -151,3 +154,24 @@
 
 (deftest day19-part-2
   (is (= (day19/part-2) 17872)))
+
+
+(deftest day20-part-1
+  (is (= (day20/part-1) 119)))
+
+(deftest day20-part-2
+  (is (= (day20/part-2) 471)))
+
+
+(deftest day21-part-1
+  (is (= (day21/part-1) 152)))
+
+(deftest day21-part-2
+  (is (= (day21/part-2) 1956174)))
+
+
+(deftest day22-part-1
+  (is (= (day22/part-1) 5538)))
+
+(deftest day22-part-2
+  (is (= (day22/part-2) 2511090)))
