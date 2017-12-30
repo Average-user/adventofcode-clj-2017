@@ -30,7 +30,7 @@
 (defn build-grid [input]
   (as-> input x
     (map #(str x "-" %) (range 128))
-    (map to-knot-hash x)
+    (pmap to-knot-hash x)
     (map #(mapv hexdig->bin %) x)
     (map #(apply str %) x)
     (mapv (fn [s] (mapv #(if (= % \1) 1 0) s)) x)))
@@ -41,7 +41,7 @@
     (filter #(= 1 (get-in xs %)) ns)))
 
 (defn all-coors [n]
-  (apply concat (map (fn [x] (map (fn [y] [x y]) (range n))) (range n))))
+  (as-> (range n) $ (for [x $, y $] [x y])))
 
 (defn grid->graph [xs]
   (let [coors (->> xs count all-coors (filter #(= 1 (get-in xs %))))]
@@ -50,7 +50,7 @@
 (defn part-1
   "Day 14 part 1 solution"
   []
-  (->> (get-input) build-grid flatten (filter #(= 1 %)) count))
+  (->> (get-input) build-grid (map #(reduce + %)) (reduce +)))
 
 (defn part-2
   "Day 14 part 1 solution"
