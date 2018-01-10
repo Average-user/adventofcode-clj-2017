@@ -1,7 +1,6 @@
 (ns advent-of-code-2017.day21
   (:require [clojure.string :as str]
-            [advent-of-code-2017.common :refer [file-lines,
-                                                elem]]))
+            [advent-of-code-2017.common :refer [file-lines]]))
 
 (defn transpose [m] (apply map list m))
 
@@ -21,19 +20,17 @@
     (map (fn [x] [x b]) (all-ways a))))
 
 (defn get-input []
-  (->> "resources/day21.txt" file-lines (map line->rule) (reduce concat)))
+  (->> "resources/day21.txt"
+    file-lines (mapcat line->rule) (reduce concat) (apply hash-map)))
 
 (def init '((0 1 0) (0 0 1) (1 1 1)))
-
-(defn match [rules m]
-  (second (first (drop-while #(not= (first %) m) rules))))
 
 (defn next-m [rules xs n]
   (let [ps  (map #(partition n %) xs)
         pps (partition n ps)
         ds  (map transpose pps)
-        cs  (map #(map (partial match rules) %) ds)]
-    (mapcat #(apply  map concat %) cs)))
+        cs  (map #(map (partial get rules) %) ds)]
+    (mapcat #(apply map concat %) cs)))
 
 (defn change-matrix [rules m]
   (if (zero? (rem (count m) 2))

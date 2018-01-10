@@ -62,9 +62,9 @@
 (defn part-1
   "Day 3 part 1 solution"
   []
-  (let [input      (get-input)
+  (let [input     (get-input)
         [xs [a b]] (move input)
-        c          (int (/ (count xs) 2))]
+        c         (int (/ (count xs) 2))]
     (+ (Math/abs (- a c)) (Math/abs (- b c)))))
 
 (defn part-2

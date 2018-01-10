@@ -5,7 +5,7 @@
 (defn get-input []
   (mapv string->int (file-lines "resources/day05.txt")))
 
-(defn move [xs l f]
+(defn move [xs f]
   (loop [xs xs, i 0, c 0]
     (let [ni (get xs i)]
       (if-not ni
@@ -15,11 +15,9 @@
 (defn part-1
   "Day 5 part 1 solution"
   []
-  (let [input (get-input)]
-    (move input (dec (count input)) inc)))
+  (move (get-input) inc))
 
 (defn part-2
   "Day 5 part 2 solution"
   []
-  (let [input (get-input)]
-    (move input (dec (count input)) #(if (> % 2) (dec %) (inc %)))))
+  (move (get-input) #(if (> % 2) (dec %) (inc %))))

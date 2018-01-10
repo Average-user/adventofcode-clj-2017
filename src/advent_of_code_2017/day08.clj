@@ -1,7 +1,6 @@
 (ns advent-of-code-2017.day08
   (:require [clojure.string :as str]
-            [advent-of-code-2017.common :refer [file-lines,
-                                                string->int]]))
+            [advent-of-code-2017.common :refer [file-lines, string->int]]))
 
 (defn action-condition [s]
   (let [[a c] (str/split s #"if ")
@@ -16,29 +15,25 @@
 (defn get-input []
   (let [f (->> "resources/day08.txt" file-lines (map action-condition))
         v (distinct (flatten (map (fn [[a _ _ b _ _]] [a b]) f)))]
-        
-    [f (map #(vector % 0) v)]))
-
-(defn get-val [var vars]
-  (->> vars (drop-while #(not= (first %) var)) first second))
+    [f (into {} (map #(vector % 0) v))]))
 
 (defn eval-cond [var con n vars]
-  (let [v (get-val var vars)
+  (let [v (get vars var)
         c (if (= con "!=") "not=" con)]
     (eval (read-string (str "(" c " " v " " n ")")))))
 
 (defn change [vars var op x]
   (let [f (if (= op "inc") + -)]
-    (map (fn [[n v]] (if (= n var) [n (f v x)] [n v])) vars)))
+    (update vars var #(f % x))))
 
 (defn run [vars ins]
-  (loop [vs vars, is ins, m []]
+  (loop [vs vars, is ins, m (mapv val vs)]
     (if (empty? is)
       [vs m]
       (let [[v op n cv con cn] (first is)]
         (if (eval-cond cv con cn vs)
           (let [nvs (change vs v op n)]
-            (recur nvs (rest is) (conj m (apply max (map second nvs)))))
+            (recur nvs (rest is) (conj m (get nvs v))))
           (recur vs (rest is) m))))))
 
 (defn part-1 []
@@ -46,7 +41,7 @@
   []
   (let [input (get-input)]
     (->> (run (second input) (first input))
-         first
+         (first)
          (map second)
          (apply max))))
 

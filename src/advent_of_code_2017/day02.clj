@@ -8,7 +8,7 @@
   (map #(str/split % #"\t") (file-lines "resources/day02.txt")))
 
 (defn diff-min-max [xs]
-  (- (apply max xs) (apply min xs)))
+  (- (reduce max xs) (reduce min xs)))
 
 (defn find-2 [xs]
   (let [a (combo/combinations xs 2)
@@ -19,9 +19,9 @@
 (defn part-1
   "Day 2 part 1 solution"
   []
-  (apply + (map #(diff-min-max (map string->int %)) (get-input))))
+  (reduce + (map #(diff-min-max (map string->int %)) (get-input))))
 
 (defn part-2
   "Day 2 part 2 solution"
   []
-  (apply + (map #(find-2 (map string->int %)) (get-input))))
+  (reduce + (map #(find-2 (map string->int %)) (get-input))))

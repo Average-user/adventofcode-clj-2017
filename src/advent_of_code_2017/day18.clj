@@ -1,11 +1,9 @@
 (ns advent-of-code-2017.day18
   (:require [clojure.string :as str]
-            [advent-of-code-2017.common :refer [file-lines,
-                                                string->int,
-                                                elem]]))
+            [advent-of-code-2017.common :refer [file-lines, string->int]]))
 
-(def abc ["a" "b" "c" "d" "e" "f" "g" "h" "i" "o" "j" "k" "l" "m"
-          "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z"])
+(def abc #{"a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m"
+           "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z"})
 
 (defn line->instruction [s]
   (let [ss (str/split s #" ")]  
@@ -25,16 +23,13 @@
 (defn get-input []
   (let [input  (file-lines "resources/day18.txt")
         vars   (flatten (map get-vars input))
-        vars'  (filter #(elem abc %) vars)
-        vars'' (vec (distinct (map #(vector % 0) vars')))]
+        vars'  (distinct (filter #(contains? abc %) vars))
+        vars'' (apply hash-map (mapcat #(vector % 0) vars'))]
     [(mapv line->instruction input) vars'']))
 
 (defn get-value [vars var]
-  (let [find (first (filter (fn [[v _]] (= v var)) vars))]
-    (if find (second find) (string->int var))))
-
-(defn replace-var [vars var v]
-  (mapv (fn [[var' v']] (if (= var' var) [var v] [var' v'])) vars))
+  (let [find (get vars var)]
+    (if find find (string->int var))))
 
 (defn get-f [ins]
   (case (first ins)
@@ -49,7 +44,7 @@
       [end (inc i) vars (conj snds (get-value vars (in 1)))]
       :set
       (let [nv (get-value vars (in 2))]
-        [end (inc i) (replace-var vars (in 1) nv) snds])
+        [end (inc i) (assoc vars (in 1) nv) snds])
       :rcv
       (let [v (get-value vars (in 1))]
         (if (zero? v) [end i vars snds] [true i vars snds]))
@@ -57,7 +52,7 @@
       (let [x (get-value vars (in 1)) y (get-value vars (in 2))]
         (if (> x 0) [end (+ i y) vars snds] [end (inc i) vars snds]))
       (let [x (get-value vars (in 1)) y (get-value vars (in 2)) f (get-f in)]
-        [end (inc i) (replace-var vars (in 1) (f x y)) snds]))))
+        [end (inc i) (assoc vars (in 1) (f x y)) snds]))))
 
 (defn apply-instruction2 [i vars rcvs in]
   (case (first in)
@@ -65,21 +60,21 @@
     [(inc i) vars (get-value vars (in 1)) rcvs]
     :set
     (let [nv (get-value vars (in 2))]
-      [(inc i) (replace-var vars (in 1) nv) nil rcvs])
+      [(inc i) (assoc vars (in 1) nv) nil rcvs])
     :rcv
     (if (empty? rcvs)
       [i vars nil rcvs]
-      [(inc i) (replace-var vars (in 1) (first rcvs)) nil (vec (rest rcvs))])
+      [(inc i) (assoc vars (in 1) (first rcvs)) nil (vec (rest rcvs))])
     :jgz
     (let [x (get-value vars (in 1)) y (get-value vars (in 2))]
       (if (> x 0)
         [(+ i y) vars nil rcvs]
         [(inc i) vars nil rcvs]))
     (let [x (get-value vars (in 1)) y (get-value vars (in 2)) f (get-f in)]
-      [(inc i) (replace-var vars (in 1) (f x y)) nil rcvs])))
+      [(inc i) (assoc vars (in 1) (f x y)) nil rcvs])))
 
 (defn shared-programs [ins vars]
-  (loop [ia 0, ib 0, vsa vars, vsb (replace-var vars "p" 1), qa [], qb [], c 0]
+  (loop [ia 0, ib 0, vsa vars, vsb (assoc vars "p" 1), qa [], qb [], c 0]
     (let [[ia' vsa' sa qa'] (apply-instruction2 ia vsa qa (ins ia))
           [ib' vsb' sb qb'] (apply-instruction2 ib vsb qb (ins ib))
           qa''              (if (nil? sb) qa' (conj qa' sb))
@@ -87,17 +82,15 @@
       (cond (and (= ia ia') (= ib ib')) c
             (not (nil? sb)) (recur ia' ib' vsa' vsb' qa'' qb'' (inc c))
             :else           (recur ia' ib' vsa' vsb' qa'' qb'' c)))))
-            
 
 (defn part-1
   "Day 18 part 1solution"
   []
   (let [[instructions vars] (get-input)]
-    (last
-      (last
-        (first (drop-while #(not (first %))
-                            (iterate (partial apply-instruction instructions)
-                                     [false 0 vars []])))))))
+    ((comp last last first)
+     (drop-while #(not (first %))
+                 (iterate (partial apply-instruction instructions)
+                          [false 0 vars []])))))
 
 (defn part-2
   "Day 18 part 1solution"

@@ -1,65 +1,57 @@
 (ns advent-of-code-2017.day07
   (:require [clojure.string             :as    str]
-            [advent-of-code-2017.common :refer [file-lines,
-                                                string->int,
-                                                elem]]))
+            [advent-of-code-2017.common :refer [file-lines, string->int,]]))
 
-(defn node-of [xs]
-  (let [[a b] (str/split (apply str (take-while #(not= % \)) xs)) #" ")]
-    [a (string->int b)]))
-
-(defn edges [xs]
-  (let [x  (first (str/split xs #" "))
-        ns1 (apply str (drop 2 (drop-while #(not= % \>) xs)))
-        ns  (str/split ns1 #", ")]
-    (if (= ns [""]) [] [x ns])))
+(defn parse-line [l]
+  (let [x        (str/split l #" -> ")
+        [name n] (str/split (first x) #" ")
+        ngs      (if-not (second x) []
+                         (str/split (second x) #", "))]
+    [name [(string->int n) ngs]]))
 
 (defn get-input []
-  (let [file (file-lines "resources/day07.txt")]
-   [(map node-of file)  (filter #(not (empty? %)) (map edges file))]))
+  (->> "resources/day07.txt" file-lines (map parse-line)))
 
-(def edges (second (get-input)))
-(def nodes (first (get-input)))
+(defn find-root [xs]
+  (let [names       (map first xs)
+        connections (set (mapcat (comp second second) xs))]
+    (first (keep #(when (not (first %)) (second %))
+                 (map (fn [x] [(contains? connections x) x]) names)))))
 
-(defn weight-of [node]
-  (->> nodes (filter (fn [[a _]] (= a node))) first second))
+(defn sums [xs x]
+  (let [[n subs] (get xs x)]
+    (if (empty? subs)
+      n
+      (+ n (reduce + (map (partial sums xs) subs))))))
 
-(defn neighbors [node]
-  (->> edges (filter (fn [[a _]] (= a node))) first second))
+(defn is-unique? [xs x]
+  (= 1 (count (filter #(= x %) xs))))
 
-(defn total-weight [node]
-  (let [n (neighbors node)]
-    (if (nil? n)
-      (weight-of node)
-      (+ (weight-of node)
-         (apply + (map total-weight n))))))
+(defn sub-sums [gf xs]
+  (map (partial sums gf) xs))
 
-(defn find-unique [xs]
-  (let [as (map second xs)]
-    (first
-      (filter (fn [[a b]] (= 1 (count (filter #(= % b) as))))
-              xs))))
-
-(defn find-problem [diff node]
-  (let [ns (neighbors node)
-        ts (map total-weight ns)]
-    (if (apply = ts)
-      (+ (weight-of node) diff)
-      (let [u  (find-unique (map vector ns ts))]
-        (find-problem diff (first u))))))
+(defn find-problem [gf x n]
+  (loop [x x]
+    (let [xs      (second (get gf x))
+          ss      (sub-sums gf xs)
+          options (filter #(is-unique? ss (second %))
+                          (map vector xs ss))]
+      (if (empty? options)
+        (+ n (first (get gf x)))
+        (recur (ffirst options))))))
 
 (defn part-1
   "Day 7 part 1 solution"
   []
-  (first (filter (fn [n] (not (some #(elem % n) (map second edges))))
-                 (map first nodes))))
+  (-> (get-input) find-root))
 
 (defn part-2
   "Day 7 part 2 solution"
   []
-  (let [ns (neighbors (part-1))
-        z  (map vector ns (map total-weight ns))
-        u  (find-unique z)
-        n  (first (filter #(not= u %) z))
-        d  (- (second n) (second u))]
-    (find-problem d (first u))))
+  (let [input  (get-input)
+        hinput (apply hash-map (apply concat input))
+        root   (find-root input)
+        ss     (sub-sums hinput (second (get hinput root)))
+        unique (first (filter #(is-unique? ss %) ss))
+        diff   (- (first (filter #(not= % unique) ss)) unique)]
+    (find-problem hinput root diff)))

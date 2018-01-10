@@ -1,25 +1,22 @@
 (ns advent-of-code-2017.day12
   (:require [clojure.string :as str]
-            [advent-of-code-2017.common :refer [file-lines,
-                                                string->int,
-                                                elem]]))
+            [advent-of-code-2017.common :refer [file-lines, string->int]]))
 
 (defn get-node [s]
   (let [[node, neighbors] (str/split s #" <-> ")]
     [(string->int node) (mapv string->int (str/split neighbors #", "))]))
 
 (defn get-input []
-  (map get-node (file-lines "resources/day12.txt")))
+  (apply hash-map (mapcat get-node (file-lines "resources/day12.txt"))))
 
 (defn connected-with [x graph]
-  (loop [gs graph, g graph, cs #{x}]
-    (if (empty? gs)
-      [cs g]
-      (let [[n nb] (first gs)]
-        (if (elem cs n)
-          (let [ng (filter #(not= (first %) n) g)]
-            (recur ng ng (apply conj cs nb)))
-          (recur (rest gs) g cs))))))
+  (loop [gs graph, cs #{x}]
+    (let [ng  (keep #(get gs %) cs)
+          ncs (apply conj cs (reduce concat ng))
+          ngs (apply dissoc gs cs)]
+      (if (empty? ng)
+         [cs gs]          
+         (recur ngs ncs)))))
 
 (defn find-connected [graph]
   (loop [gs graph, ac #{}]

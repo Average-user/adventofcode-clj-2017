@@ -1,11 +1,9 @@
 (ns advent-of-code-2017.day20
   (:require [clojure.string :as str]
-            [advent-of-code-2017.common :refer [file-lines,
-                                                string->int,
-                                                elem]]))
+            [advent-of-code-2017.common :refer [file-lines, string->int]]))
 
 (defn line->particule [s]
-  (as-> s $ (filter #(not (elem "<>=pva " %)) $)
+  (as-> s $ (filter #(not (contains? (set "<>=pva ") %)) $)
             (apply str $)
             (str/split $ #",")
             (map string->int $)

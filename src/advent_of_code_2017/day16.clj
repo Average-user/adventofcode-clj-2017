@@ -1,8 +1,6 @@
 (ns advent-of-code-2017.day16
   (:require [clojure.string :as str]
-            [advent-of-code-2017.common :refer [file-lines,
-                                                string->int,
-                                                elem]]))
+            [advent-of-code-2017.common :refer [file-lines, string->int]]))
 
 (defn to-instruction [s]
   (cond (= \s (first s))   [:s (string->int s)]
@@ -38,7 +36,7 @@
 
 (defn find-cycle [xs is]
   (loop [xs xs, ac []]
-    (if (elem ac xs)
+    (if (some #(= % xs) ac)
       (rest ac)
       (let [nxs (dance xs is)]
         (recur nxs (conj ac xs))))))

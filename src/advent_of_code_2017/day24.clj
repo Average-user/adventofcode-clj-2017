@@ -48,5 +48,6 @@
   "Day 24 part 2 solution"
   []
   (let [[cs sts] (get-input)]
-    (second (last (sort (pmap #(build-tree2 % (reduce disj cs [% (rc %)]))
-                              (map (comp vec sort) sts)))))))
+    ((comp second last sort)
+     (pmap #(build-tree2 % (reduce disj cs [% (rc %)]))
+           (map (comp vec sort) sts)))))

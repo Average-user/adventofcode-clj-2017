@@ -1,9 +1,8 @@
 (ns advent-of-code-2017.day19
   (:require [clojure.string :as str]
-            [advent-of-code-2017.common :refer [file-lines,
-                                                elem]]))
+            [advent-of-code-2017.common :refer [file-lines]]))
 
-(def abc (vec (char-array "ABCDEFGHIJKLMNOPQRSTUVWXYZ")))
+(def abc (set (vec (char-array "ABCDEFGHIJKLMNOPQRSTUVWXYZ"))))
 
 (defn get-input []
   (->> "resources/day19.txt" file-lines (mapv #(vec (char-array %)))))
@@ -28,9 +27,9 @@
 (defn walk [xs]
   (loop [coor (find-entry xs), dir :down, ls [], c 1]
     (let [[ncoor e ndir] (chose xs dir coor)]
-      (cond (nil? ncoor) [(reduce str ls) c]
-            (elem abc e) (recur ncoor ndir (conj ls e) (inc c))
-            :else        (recur ncoor ndir ls          (inc c))))))
+      (cond (nil? ncoor)      [(reduce str ls) c]
+            (contains? abc e) (recur ncoor ndir (conj ls e) (inc c))
+            :else             (recur ncoor ndir ls          (inc c))))))
 
 (defn part-1
   "Day 19 part 1 solution"

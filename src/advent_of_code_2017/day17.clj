@@ -1,7 +1,6 @@
 (ns advent-of-code-2017.day17
   (:require [clojure.string :as str]
-            [advent-of-code-2017.common :refer [file-lines,
-                                                string->int]]))
+            [advent-of-code-2017.common :refer [file-lines, string->int]]))
 
 (defn get-input []
   (string->int (first (file-lines "resources/day17.txt"))))
@@ -14,11 +13,12 @@
   (let [ni (mod (+ 1 i s) (count xs))]
     [(insert-at xs ni n) (inc n) ni s]))
 
-(defn safe-spinlock [[f i n s]]
-  (let [ni (rem (+ 1 i s) n)]
-    (if (zero? ni)
-      [n ni (inc n) s]
-      [f ni (inc n) s])))
+(defn safe-spinlock [skip times]
+  (loop [t times, f nil, i 0, n 1]
+    (let [ni (rem (+ 1 i skip) n)]
+      (cond (zero? t)  f
+            (zero? ni) (recur (dec t) n ni (inc n))
+            :else      (recur (dec t) f ni (inc n))))))
 
 (defn part-1
   "Day 17 part 1 solution"
@@ -32,4 +32,4 @@
 (defn part-2
   "Day 17 part 2 solution"
   []
-  (as-> (get-input) $ (iterate safe-spinlock [nil 0 1 $]) (drop 50000000 $) (ffirst $)))
+  (-> (get-input) (safe-spinlock 50000000)))  

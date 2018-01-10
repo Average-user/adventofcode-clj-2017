@@ -1,8 +1,6 @@
 (ns advent-of-code-2017.day10
   (:require [clojure.string :as str]
-            [advent-of-code-2017.common :refer [file-lines,
-                                                string->int,
-                                                elem]]))
+            [advent-of-code-2017.common :refer [file-lines, string->int]]))
 
 (defn get-input []
   (as-> "resources/day10.txt"
@@ -26,11 +24,11 @@
 
 (defn to-knot-hash [x]
   (->> (concat (map byte x) '(17 31 73 47 23))
-       repeat
+       (repeat)
        (take 64)
-       flatten
+       (flatten)
        (run (vec (range 256)))
-       first
+       (first)
        (partition 16) 
        (map #(apply bit-xor %))
        (map #(format "%02x" %))
@@ -39,7 +37,8 @@
 (defn part-1
   "Day 10 part 1 solution"
   []
-  (as-> (get-input) x (run (vec (range 256)) x) (first x) (* (first x) (second x))))
+  (as-> (get-input) x
+    (run (vec (range 256)) x) (first x) (* (first x) (second x))))
 
 (defn part-2
   "Day 10 part 2 solution"

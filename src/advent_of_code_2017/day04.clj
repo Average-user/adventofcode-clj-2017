@@ -3,8 +3,7 @@
             [advent-of-code-2017.common :refer [file-lines]]))
 
 (defn get-input []
-  (map #(str/split % #" ")
-       (file-lines "resources/day04.txt")))
+  (->> "resources/day04.txt" file-lines (map #(str/split % #" "))))
 
 (defn part-1
   "Day 4 part 1 solution"
